@@ -1,0 +1,210 @@
+ .product-page{max-width:1180px;margin:auto;padding:40px clamp(18px,5vw,65px) 75px}.breadcrumbs{font-size:11px;color:var(--muted);margin-bottom:25px}.detail-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(25px,6vw,75px)}.gallery-main{aspect-ratio:4/4.6;background:var(--cream);border-radius:5px;overflow:hidden;display:grid;place-items:center}.gallery-main img,.gallery-main video{width:100%;height:100%;object-fit:contain;cursor:zoom-in}.gallery-thumbs{display:flex;gap:9px;margin-top:10px;overflow:auto}.gallery-thumbs button{width:65px;height:70px;flex:none;border:1px solid var(--line);padding:0;background:var(--cream);border-radius:4px;overflow:hidden}.gallery-thumbs button.active{border-color:var(--brown)}.gallery-thumbs img{width:100%;height:100%;object-fit:cover}.detail-info{padding:8px 0}.detail-info h1{font-size:clamp(32px,4vw,48px);letter-spacing:-1px;margin:13px 0}.detail-price{font-size:22px;font-weight:700;margin:18px 0 5px}.detail-old{color:var(--muted);text-decoration:line-through;font-size:13px;margin-left:9px}.stock-label{font-size:11px;color:var(--brown);margin:12px 0 22px}.detail-description{font-size:13px;line-height:1.9;color:#796c62;white-space:pre-line;border-top:1px solid var(--line);padding-top:20px}.detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:25px}.detail-actions button{width:100%}.detail-info .btn:disabled{opacity:.5;cursor:not-allowed}.reviews{border-top:1px solid var(--line);margin-top:65px;padding-top:35px}.reviews h2{font:500 30px var(--serif);margin:10px 0 25px}.review-card{padding:18px 0;border-bottom:1px solid var(--line)}.review-name{font-weight:700;font-size:12px}.review-stars{color:#a77c62;letter-spacing:2px}.review-card p{font-size:13px;line-height:1.7;color:var(--muted);margin:8px 0}.detail-loading{padding:100px 0;text-align:center;color:var(--muted)}.hidden{display:none!important}.zoom-backdrop{position:fixed;inset:0;background:#1e1712ed;z-index:100;display:grid;place-items:center;padding:20px}.zoom-backdrop img{max-width:95vw;max-height:90vh;object-fit:contain}.zoom-backdrop button{position:absolute;right:20px;top:15px;color:white;background:transparent;border:0;font-size:36px}@media(max-width:700px){.product-page{padding:22px 16px 45px}.detail-grid{grid-template-columns:1fr;gap:24px}.detail-info h1{font-size:36px}.detail-actions{grid-template-columns:1fr}.reviews{margin-top:40px}.detail-grid .detail-price{font-size:21px}}
+
+
+/* Correções visuais Dudaocean */
+.duda-brand-fixed,
+.brand.duda-brand-fixed {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+  min-width: 0;
+  overflow: visible;
+}
+.duda-logo-image {
+  display: block;
+  width: clamp(118px, 31vw, 172px);
+  height: 58px;
+  max-width: none;
+  object-fit: contain;
+  object-position: left center;
+  flex-shrink: 0;
+}
+#cartOpen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  flex-shrink: 0;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 7px;
+  border-radius: 50%;
+}
+#cartOpen img,
+#accountBtn img {
+  display: block;
+  width: 27px;
+  height: 27px;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 0;
+  overflow: visible;
+}
+#cartOpen .cart-count,
+#cartOpen .cart-counter,
+#cartOpen [data-cart-count] {
+  line-height: 1;
+}
+
+/* Categorias organizadas em grade: não precisa arrastar para os lados. */
+#categoryPills {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  overflow: visible !important;
+  white-space: normal !important;
+  padding: 4px 0 12px;
+}
+#categoryPills > * {
+  min-width: 0;
+  width: 100%;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  border-radius: 999px;
+  margin: 0 !important;
+}
+@media (min-width: 600px) {
+  #categoryPills {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+@media (max-width: 360px) {
+  #categoryPills {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.product-photo img,
+.product-image img,
+.product-card img {
+  max-width: 100%;
+}
+.detail-gallery {
+  min-width: 0;
+}
+.detail-main-image {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #f5f0eb;
+}
+.detail-main-image > img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+.demo-label {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #fffaf5;
+  color: #765b49;
+  font-size: 10px;
+  letter-spacing: .07em;
+}
+.gallery-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.gallery-thumb {
+  width: 66px;
+  height: 78px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e4d8ce;
+  border-radius: 10px;
+  background: #f5f0eb;
+}
+.gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.gallery-thumb.active {
+  border: 2px solid #92735e;
+}
+.detail-info {
+  min-width: 0;
+  padding: 8px 0;
+}
+.detail-info h1 {
+  margin: 8px 0 14px;
+  color: #403329;
+  font-size: clamp(26px, 5vw, 38px);
+  line-height: 1.15;
+}
+.detail-prices {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0;
+}
+.detail-prices strong {
+  color: #403329;
+  font-size: 25px;
+}
+.detail-prices del {
+  color: #958579;
+  font-size: 15px;
+}
+.demo-disclaimer,
+.detail-note {
+  color: #89796d;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.detail-description {
+  color: #6e5d51;
+  line-height: 1.8;
+  margin: 18px 0;
+}
+.detail-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 22px;
+}
+.detail-actions button {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 999px;
+}
+.detail-no-image {
+  aspect-ratio: 4 / 5;
+  display: grid;
+  place-items: center;
+  color: #8b7564;
+}
+@media (min-width: 700px) {
+  .detail-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 420px) {
+  .duda-logo-image {
+    width: 108px;
+    height: 48px;
+  }
+  #cartOpen img,
+  #accountBtn img {
+    width: 25px;
+    height: 25px;
+  }
+}
+

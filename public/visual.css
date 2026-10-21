@@ -1,0 +1,635 @@
+:root {
+  --do-fundo: #fffdfb;
+  --do-creme: #f8f2ec;
+  --do-bege: #eee0d3;
+  --do-nude: #dcc2ad;
+  --do-marrom: #795b49;
+  --do-texto: #352920;
+  --do-borda: #e9ddd2;
+  --do-raio: 24px;
+  --do-pilula: 999px;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
+body {
+  color: var(--do-texto);
+  background: var(--do-fundo);
+}
+
+button, input, select, textarea {
+  font: inherit;
+  border-radius: var(--do-pilula) !important;
+}
+
+button, a, input, select, textarea {
+  transition: background-color .2s ease, border-color .2s ease,
+    box-shadow .2s ease, transform .2s ease;
+}
+
+button, input, select, textarea {
+  max-width: 100%;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible, a:focus-visible,
+input:focus-visible, select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--do-marrom);
+  outline-offset: 3px;
+}
+
+img {
+  max-width: 100%;
+}
+
+.topbar, header {
+  border-color: var(--do-borda);
+}
+
+.brand, .logo, .site-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand img, .logo img, .site-logo img, img.do-logo {
+  width: 43px;
+  height: 43px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.brand, .logo, .site-logo {
+  color: var(--do-texto);
+  text-decoration: none;
+}
+
+button, .btn, .quick-add, .pill, .icon-btn {
+  border-radius: var(--do-pilula) !important;
+}
+
+.btn-dark, .btn-primary {
+  background: var(--do-texto);
+  border-color: var(--do-texto);
+}
+
+.btn-dark:hover, .btn-primary:hover {
+  background: var(--do-marrom);
+}
+
+.hero {
+  background: linear-gradient(135deg, #faf5f0, #f0e3d8);
+}
+
+.product-card, .product-photo, .product-image,
+.gallery-main, .modal, .cart-drawer,
+.admin-card, .admin-login, .stat,
+.review-card, .security-note {
+  border-radius: var(--do-raio) !important;
+  overflow: hidden;
+}
+
+.product-photo img, .product-image img {
+  border-radius: inherit;
+}
+
+input, select, textarea {
+  border: 1px solid var(--do-borda) !important;
+  background: #fffdfb;
+  padding: 13px 17px;
+}
+
+textarea {
+  border-radius: 18px !important;
+  resize: vertical;
+}
+
+.product-grid {
+  gap: 24px 16px;
+}
+
+.product-card {
+  min-width: 0;
+}
+
+.product-photo {
+  background: var(--do-creme);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 8px;
+  background: transparent;
+  border: 0;
+}
+
+.do-icon-img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.do-logo-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.do-search-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 24px;
+  width: 100%;
+}
+
+.do-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 5px 14px;
+  background: #faf5f0;
+  border: 1px solid var(--do-borda);
+  border-radius: var(--do-pilula);
+}
+
+.do-search-box input {
+  width: 100%;
+  min-width: 0;
+  border: 0 !important;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+}
+
+.do-filter {
+  min-width: 130px;
+  max-width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--do-borda);
+  border-radius: var(--do-pilula);
+  color: var(--do-texto);
+  background: #fffdfb;
+}
+
+.do-results-count {
+  width: 100%;
+  color: #8a786c;
+  font-size: 13px;
+}
+
+.do-hidden {
+  display: none !important;
+}
+
+.favorite {
+  border-radius: 50% !important;
+}
+
+.cart-thumb, .admin-product img {
+  border-radius: 16px !important;
+}
+
+.cart-drawer {
+  border-radius: 28px 0 0 28px !important;
+}
+
+@media (max-width: 650px) {
+  .topbar, header {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 12px;
+  }
+
+  .product-photo {
+    border-radius: 18px !important;
+  }
+
+  .do-search-tools {
+    gap: 8px;
+  }
+
+  .do-search-box {
+    flex-basis: 100%;
+  }
+
+  .do-filter {
+    flex: 1 1 42%;
+    min-width: 0;
+    font-size: 13px;
+  }
+
+  .cart-drawer {
+    top: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: calc(100% - 16px);
+    border-radius: 24px !important;
+  }
+
+  .modal {
+    border-radius: 24px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
+}
+
+/* Logo e nome da marca */
+.duda-brand-fixed {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  min-width: 0;
+  max-width: 100%;
+  text-decoration: none !important;
+  white-space: nowrap;
+}
+
+.duda-logo-image {
+  display: block !important;
+  width: 42px !important;
+  height: 42px !important;
+  object-fit: contain !important;
+  flex: 0 0 42px !important;
+  border-radius: 50% !important;
+}
+
+.duda-brand-fixed .brand-name,
+.duda-brand-fixed .site-name,
+.duda-brand-fixed .logo-text,
+.duda-brand-fixed [data-brand-name] {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: inherit;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: normal;
+  white-space: nowrap;
+}
+
+/* Ícones novos */
+.duda-icon-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 8px !important;
+  border-radius: 50% !important;
+  overflow: hidden;
+}
+
+.duda-ui-icon {
+  display: block !important;
+  width: 24px !important;
+  height: 24px !important;
+  object-fit: contain !important;
+  flex: 0 0 24px !important;
+  border-radius: 0 !important;
+  pointer-events: none;
+}
+
+.duda-brand-fixed img,
+.duda-icon-button img {
+  vertical-align: middle;
+}
+
+/* CORREÇÃO TEMPORÁRIA DA IDENTIDADE VISUAL DUDAOCEAN */
+
+/* Oculta o nome da marca temporariamente */
+.duda-brand-fixed .brand-name,
+.duda-brand-fixed .site-name,
+.duda-brand-fixed .logo-text,
+.duda-brand-fixed [data-brand-name] {
+  display: none !important;
+}
+
+/* Logo maior */
+.duda-brand-fixed {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.duda-brand-fixed .duda-logo-image {
+  display: block !important;
+  width: 76px !important;
+  height: 76px !important;
+  min-width: 76px !important;
+  max-width: none !important;
+  object-fit: contain !important;
+  flex: 0 0 76px !important;
+}
+
+/* Botões de conta, sacola e busca */
+.duda-icon-button {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  padding: 8px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+}
+
+.duda-icon-button > img.duda-ui-icon {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  object-fit: contain !important;
+}
+
+/* Esconde os ícones antigos dentro dos botões corrigidos */
+.duda-icon-button svg,
+.duda-icon-button i,
+.duda-icon-button .icon,
+.duda-icon-button .material-icons,
+.duda-icon-button [data-lucide],
+.duda-icon-button [class*="icon-"] {
+  display: none !important;
+}
+
+/* Não deixa a logo estourar o cabeçalho em telas pequenas */
+@media (max-width: 480px) {
+  .duda-brand-fixed .duda-logo-image {
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    flex-basis: 64px !important;
+  }
+}
+
+/* Cabeçalho Dudaocean: logo sem texto */
+.topbar .brand.duda-brand-fixed {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 0 !important;
+  overflow: visible !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+.topbar .duda-brand-fixed > .duda-logo-image {
+  display: block !important;
+  width: 82px !important;
+  height: 82px !important;
+  max-width: none !important;
+  min-width: 82px !important;
+  object-fit: contain !important;
+  flex: 0 0 82px !important;
+}
+
+.topbar .duda-icon-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  width: 46px !important;
+  height: 46px !important;
+  min-width: 46px !important;
+  min-height: 46px !important;
+  padding: 8px !important;
+  border-radius: 50% !important;
+  font-size: 0 !important;
+  line-height: 1 !important;
+}
+
+.topbar .duda-icon-button > img.duda-ui-icon {
+  display: block !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  object-fit: contain !important;
+  flex: 0 0 28px !important;
+}
+
+.topbar #cartCount {
+  position: absolute !important;
+  top: -2px !important;
+  right: -2px !important;
+  z-index: 2 !important;
+  font-size: 11px !important;
+  line-height: 16px !important;
+  min-width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+}
+
+#searchSubmit.duda-icon-button {
+  width: 46px !important;
+  min-width: 46px !important;
+  padding: 8px !important;
+  font-size: 0 !important;
+}
+
+#searchSubmit .duda-ui-icon {
+  width: 26px !important;
+  height: 26px !important;
+  object-fit: contain !important;
+}
+
+@media (max-width: 480px) {
+  .topbar .duda-brand-fixed > .duda-logo-image {
+    width: 68px !important;
+    height: 68px !important;
+    min-width: 68px !important;
+    flex-basis: 68px !important;
+  }
+}
+
+/* LOGO MAIOR */
+.topbar .duda-brand-fixed > .duda-logo-image {
+  width: 104px !important;
+  height: 104px !important;
+  min-width: 104px !important;
+  flex-basis: 104px !important;
+}
+
+/* Cabeçalho com espaço para a logo ampliada */
+.topbar {
+  min-height: 112px !important;
+}
+
+/* Sacola e conta mantêm tamanho confortável */
+.topbar .duda-icon-button {
+  flex-shrink: 0 !important;
+}
+
+/* Busca grande e visível na área dos produtos */
+#searchSubmit.duda-icon-button {
+  width: 58px !important;
+  height: 58px !important;
+  min-width: 58px !important;
+  min-height: 58px !important;
+  padding: 10px !important;
+  border-radius: 50% !important;
+}
+
+#searchSubmit .duda-ui-icon {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  object-fit: contain !important;
+}
+
+/* Se a busca estiver no painel, não a exibe no topo */
+.topbar #searchSubmit,
+.topbar .search-btn,
+.topbar [data-search-button] {
+  display: none !important;
+}
+
+@media (max-width: 480px) {
+  .topbar .duda-brand-fixed > .duda-logo-image {
+    width: 82px !important;
+    height: 82px !important;
+    min-width: 82px !important;
+    flex-basis: 82px !important;
+  }
+
+  .topbar {
+    min-height: 92px !important;
+  }
+}
+
+/* Ajustes temporários da Dudaocean */
+.topbar {
+  min-height: 124px !important;
+}
+
+.topbar .brand,
+.topbar .duda-brand-fixed {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+.topbar .brand > img,
+.topbar .duda-logo-image {
+  width: 112px !important;
+  height: 112px !important;
+  min-width: 112px !important;
+  max-width: none !important;
+  object-fit: contain !important;
+}
+
+.demo-products-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.demo-product {
+  min-width: 0;
+  overflow: hidden;
+  padding: 12px !important;
+  border-radius: 22px !important;
+  background: #fbf7f2 !important;
+  border: 1px solid #eee3d8 !important;
+}
+
+.demo-product-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 155px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #f1e4d7, #e5d1be);
+}
+
+.demo-label {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #fffaf5;
+  color: #80634f;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.demo-product h3 {
+  margin: 12px 0 5px;
+  color: #49382e;
+  font-size: 15px;
+}
+
+.demo-category,
+.demo-notice {
+  margin: 4px 0;
+  color: #806f62;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.demo-notice {
+  padding-top: 6px;
+  border-top: 1px solid #e8dbcf;
+}
+
+@media (min-width: 700px) {
+  .demo-products-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    min-height: 94px !important;
+  }
+
+  .topbar .brand > img,
+  .topbar .duda-logo-image {
+    width: 86px !important;
+    height: 86px !important;
+    min-width: 86px !important;
+  }
+}

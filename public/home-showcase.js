@@ -1,0 +1,211 @@
+(() => {
+  "use strict";
+
+  const money = value => Number(value || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
+
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[ch]);
+
+  const imageOf = product => {
+    const images = Array.isArray(product.images) ? product.images : [];
+    return images[0] || product.image || "";
+  };
+
+  function card(product, label) {
+    const slug = product.slug || product.id || "";
+    const title = product.title || product.name || "Acessório";
+    const image = imageOf(product);
+    const imageMarkup = image
+      ? `<img loading="lazy" src="${esc(image)}" alt="${esc(title)}">`
+      : `<span class="showcase-no-image">DudaOcean</span>`;
+
+    return `
+      <article class="showcase-card">
+        <a class="showcase-card-image" href="/produto.html?slug=${encodeURIComponent(slug)}">
+          ${imageMarkup}
+          <span class="showcase-ribbon ${label === "NOVIDADE" ? "ribbon-new" : "ribbon-best"}">${label}</span>
+          ${product.demo ? '<span class="showcase-demo-label">DEMONSTRAÇÃO</span>' : ""}
+        </a>
+        <div class="showcase-card-info">
+          <span class="showcase-card-category">${esc(product.category || "Acessórios")}</span>
+          <a class="showcase-card-title" href="/produto.html?slug=${encodeURIComponent(slug)}">${esc(title)}</a>
+          <strong>${money(product.price)}</strong>
+          ${product.demo ? '<small>Preço ilustrativo</small>' : ""}
+          <a class="showcase-view" href="/produto.html?slug=${encodeURIComponent(slug)}">Ver peça <span>↗</span></a>
+        </div>
+      </article>`;
+  }
+
+  async function getProducts() {
+    try {
+      const response = await fetch("/api/products");
+      if (response.ok) {
+        const result = await response.json();
+        const list = Array.isArray(result) ? result : result.products;
+        if (Array.isArray(list) && list.length) return list;
+      }
+    } catch (_) {}
+
+    return Array.isArray(window.DEMO_PRODUCTS) ? [...window.DEMO_PRODUCTS] : [];
+  }
+
+  function renderHeroTrack(list) {
+    const track = document.getElementById("heroProductsTrack");
+    if (!track) return;
+
+    const picks = list.filter(p => imageOf(p)).slice(0, 8);
+    if (!picks.length) {
+      track.innerHTML = '<span class="hero-gallery-loading">DudaOcean ✧</span>';
+      return;
+    }
+
+    const slides = picks.map((product, index) => {
+      const slug = product.slug || product.id || "";
+      const title = product.title || product.name || "Acessório";
+      const label = index % 2 === 0 ? "NOVIDADE" : "MAIS VENDIDO";
+      return `
+        <a class="hero-product-slide" href="/produto.html?slug=${encodeURIComponent(slug)}" aria-label="Ver ${esc(title)}">
+          <img src="${esc(imageOf(product))}" alt="${esc(title)}" loading="${index < 2 ? "eager" : "lazy"}">
+          <span class="showcase-ribbon ${label === "NOVIDADE" ? "ribbon-new" : "ribbon-best"}">${label}</span>
+          <span class="hero-product-name">${esc(title)}</span>
+        </a>`;
+    }).join("");
+
+    track.innerHTML = slides + slides;
+    track.dataset.autoScroll = "true";
+    track.dataset.originalCount = String(picks.length);
+  }
+
+  function renderTrack(id, list, label) {
+    const track = document.getElementById(id);
+    if (!track) return;
+
+    track.classList.add("showcase-auto-track");
+    track.innerHTML = list.length
+      ? list.map(product => card(product, label)).join("")
+      : '<p class="showcase-loading">Nenhuma peça disponível nesta seção.</p>';
+
+    if (list.length > 1) {
+      track.innerHTML += list.map(product => card(product, label)).join("");
+      track.dataset.autoScroll = "true";
+      track.dataset.originalCount = String(list.length);
+    }
+  }
+
+  function setupAutoScroll() {
+    document.querySelectorAll(".showcase-auto-track[data-auto-scroll='true']").forEach(track => {
+      if (track.dataset.autoReady === "true") return;
+      track.dataset.autoReady = "true";
+
+      let last = 0;
+      let position = track.scrollLeft || 0;
+      let halfWidth = 0;
+      let resumeAt = 0;
+      let touching = false;
+      const speed = track.id === "heroProductsTrack" ? 22 : 28;
+
+      const measure = () => {
+        const cards = [...track.children];
+        const count = Number(track.dataset.originalCount || 0);
+        if (!count || cards.length < count * 2) return;
+
+        const style = getComputedStyle(track);
+        const gap = parseFloat(style.columnGap || style.gap) || 0;
+        halfWidth = 0;
+        for (let i = 0; i < count; i++) {
+          halfWidth += cards[i].getBoundingClientRect().width;
+          if (i > 0) halfWidth += gap;
+        }
+        if (halfWidth > 0) position = track.scrollLeft % halfWidth;
+      };
+
+      const pauseBriefly = (duration = 1200) => {
+        resumeAt = Date.now() + duration;
+      };
+
+      track.addEventListener("pointerdown", event => {
+        touching = event.pointerType === "touch";
+        pauseBriefly(touching ? 1800 : 500);
+      }, { passive: true });
+
+      track.addEventListener("pointerup", () => {
+        touching = false;
+        pauseBriefly(1000);
+      }, { passive: true });
+
+      track.addEventListener("pointercancel", () => {
+        touching = false;
+        pauseBriefly(500);
+      }, { passive: true });
+
+      track.addEventListener("click", () => pauseBriefly(700), { passive: true });
+      track.addEventListener("mouseenter", () => pauseBriefly(700));
+      track.addEventListener("mouseleave", () => pauseBriefly(200));
+      track.addEventListener("focusin", () => pauseBriefly(700));
+      track.addEventListener("focusout", () => pauseBriefly(300));
+
+      track.addEventListener("scroll", () => {
+        if (halfWidth > 0) position = track.scrollLeft % halfWidth;
+      }, { passive: true });
+
+      const step = timestamp => {
+        if (!last) last = timestamp;
+        const elapsed = Math.min((timestamp - last) / 1000, 0.05);
+        last = timestamp;
+
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!touching && Date.now() >= resumeAt && !reducedMotion && halfWidth > 0) {
+          position += speed * elapsed;
+          if (position >= halfWidth) position %= halfWidth;
+          track.scrollLeft = position;
+        }
+        requestAnimationFrame(step);
+      };
+
+      measure();
+      window.addEventListener("resize", measure);
+      requestAnimationFrame(step);
+    });
+  }
+
+  document.addEventListener("click", event => {
+    const button = event.target.closest("[data-scroll-track]");
+    if (!button) return;
+
+    const track = document.getElementById(button.dataset.scrollTrack);
+    if (!track) return;
+
+    const direction = Number(button.dataset.direction || 1);
+    track.scrollBy({
+      left: direction * Math.max(track.clientWidth * 0.8, 220),
+      behavior: "smooth"
+    });
+  });
+
+  getProducts().then(list => {
+    const products = list.filter(p => p && (p.id || p.slug));
+    const newest = [...products].sort((a, b) => {
+      const dateA = Date.parse(a.created_at || a.createdAt || "") || 0;
+      const dateB = Date.parse(b.created_at || b.createdAt || "") || 0;
+      return dateB - dateA;
+    });
+
+    const featured = [...products].sort((a, b) => {
+      const scoreA = Number(a.featured === true || a.is_featured === true);
+      const scoreB = Number(b.featured === true || b.is_featured === true);
+      return scoreB - scoreA;
+    });
+
+    renderHeroTrack(newest.length ? newest : products);
+    renderTrack("newProductsTrack", newest.slice(0, 10), "NOVIDADE");
+    renderTrack("featuredProductsTrack", featured.slice(0, 10), "MAIS VENDIDO");
+    setupAutoScroll();
+  }).catch(() => {
+    renderTrack("newProductsTrack", [], "NOVIDADE");
+    renderTrack("featuredProductsTrack", [], "MAIS VENDIDO");
+  });
+})();

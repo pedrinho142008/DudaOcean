@@ -1,0 +1,532 @@
+/* DUDAOCEAN — acabamento visual premium */
+:root {
+  --cream: #f8f3ee;
+  --beige: #eee1d5;
+  --nude: #ddc4b1;
+  --brown: #795b49;
+  --dark: #352920;
+  --muted: #8a786c;
+  --white: #fffdfb;
+  --line: #e9ded4;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
+body {
+  background: var(--white);
+  color: var(--dark);
+  letter-spacing: -.1px;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  transition:
+    background-color .22s ease,
+    border-color .22s ease,
+    color .22s ease,
+    box-shadow .22s ease,
+    transform .22s ease;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--brown);
+  outline-offset: 3px;
+}
+
+.topbar {
+  min-height: 76px;
+  border-bottom: 1px solid #e9ded477;
+  box-shadow: 0 3px 20px #38271b05;
+}
+
+.brand {
+  font-size: 26px;
+  letter-spacing: -1.3px;
+}
+
+.brand small {
+  letter-spacing: 3px;
+}
+
+.desktop-nav a {
+  position: relative;
+  padding: 8px 0;
+}
+
+.desktop-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 1px;
+  background: var(--brown);
+  transition: width .2s ease;
+}
+
+.desktop-nav a:hover::after {
+  width: 100%;
+}
+
+.icon-btn {
+  border-radius: var(--radius-pill);
+  background: transparent;
+}
+
+.icon-btn:hover {
+  background: var(--beige);
+}
+
+.hero {
+  background: linear-gradient(125deg, #f8f3ee 0%, #f3e9df 100%);
+  padding-top: clamp(35px, 6vw, 76px);
+  padding-bottom: clamp(35px, 6vw, 76px);
+}
+
+.hero-copy h1 {
+  line-height: 1.04;
+}
+
+.hero-copy p {
+  max-width: 390px;
+  line-height: 1.9;
+}
+
+.btn {
+  min-height: 48px;
+  border-radius: var(--radius-pill);
+  padding: 14px 23px;
+}
+
+.btn-dark {
+  background: var(--dark);
+  box-shadow: 0 5px 14px #35292012;
+}
+
+.btn-dark:hover {
+  background: var(--brown);
+  box-shadow: 0 8px 20px #3529201c;
+}
+
+.btn-light {
+  border: 1px solid #e5d6c9;
+  background: #f3e9df;
+}
+
+.btn-light:hover {
+  background: #e9d8c9;
+}
+
+.hero-art {
+  height: clamp(280px, 39vw, 440px);
+  max-width: 480px;
+}
+
+/* Remove a ilustração artificial feita com símbolos e círculos CSS. */
+.hero-image {
+  border-radius: 48% 48% 24px 24px;
+  background-color: #e6d5c6;
+  background-image:
+    linear-gradient(180deg, #4a33251a, #4a332500 48%, #4a33252b),
+    url("https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1100&q=85");
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 18px 50px #6b4c3512;
+}
+
+.hero-image::before,
+.hero-image::after {
+  content: none !important;
+  display: none !important;
+}
+
+.hero-stamp {
+  border-radius: 50%;
+  border: 1px solid #e9ded4;
+  box-shadow: 0 12px 35px #49332114;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+}
+
+.benefits {
+  background: #fffdfb;
+  border-bottom-color: var(--line);
+}
+
+.section {
+  padding-top: clamp(42px, 6vw, 76px);
+  padding-bottom: clamp(42px, 6vw, 76px);
+}
+
+.section-heading h2,
+.newsletter h2 {
+  letter-spacing: -.8px;
+}
+
+.category-pills {
+  gap: 10px;
+}
+
+.pill {
+  border-radius: var(--radius-pill);
+  padding: 11px 19px;
+  background: #fffdfb;
+}
+
+.pill.active,
+.pill:hover {
+  background: var(--dark);
+}
+
+.product-grid {
+  gap: 30px 20px;
+}
+
+.product-card {
+  min-width: 0;
+  animation: appear .35s ease both;
+}
+
+.product-photo {
+  border-radius: var(--radius-md);
+  background: #f3ebe4;
+  overflow: hidden;
+}
+
+.product-photo img {
+  transition: transform .5s cubic-bezier(.2,.7,.2,1);
+}
+
+.product-card:hover .product-photo img {
+  transform: scale(1.035);
+}
+
+.photo-placeholder {
+  background: linear-gradient(145deg, #f1e5da, #faf6f1);
+  color: transparent;
+}
+
+.favorite {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fffdfbf0;
+  box-shadow: 0 3px 12px #39281b0d;
+}
+
+.favorite:hover {
+  transform: scale(1.06);
+}
+
+.product-title {
+  line-height: 1.45;
+}
+
+.quick-add {
+  border-radius: var(--radius-pill);
+  padding: 12px;
+  background: #fffdfb;
+  border-color: #e5d8cc;
+}
+
+.quick-add:hover:not(:disabled) {
+  background: var(--dark);
+}
+
+.quick-add:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.quote-band {
+  background: linear-gradient(120deg, #f0e4d9, #f7eee7);
+}
+
+.newsletter {
+  background: #fcf8f4;
+}
+
+.newsletter input,
+.search-panel input,
+.modal input,
+.admin-login input,
+.admin-card input:not([type=checkbox]),
+.admin-card select,
+.admin-card textarea {
+  border-radius: var(--radius-pill);
+  border-color: #e8dbcf;
+  background: #fffdfb;
+}
+
+.admin-card textarea,
+.admin-card input:not([type=checkbox]),
+.admin-card select {
+  border-radius: var(--radius-sm);
+}
+
+.search-panel input {
+  min-height: 48px;
+}
+
+.footer {
+  background: #f5eee7;
+}
+
+.footer-links a {
+  padding: 5px 0;
+}
+
+/* Sacola com cantos suaves e hierarquia visual mais limpa. */
+.cart-drawer {
+  border-radius: 28px 0 0 28px;
+  box-shadow: -12px 0 50px #25190f18;
+}
+
+.cart-row {
+  gap: 14px;
+}
+
+.cart-thumb {
+  border-radius: var(--radius-sm);
+}
+
+.qty-controls button {
+  border-radius: 50%;
+  background: #f8f2ec;
+  border-color: #e7d9cd;
+}
+
+.total-line strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.modal {
+  border-radius: 24px;
+  box-shadow: 0 20px 70px #21170f25;
+}
+
+.modal input {
+  border-radius: var(--radius-sm);
+}
+
+.toast {
+  border-radius: var(--radius-pill);
+  box-shadow: 0 8px 28px #21170f24;
+}
+
+/* Página individual de produto. */
+.product-page {
+  max-width: 1240px;
+}
+
+.gallery-main {
+  border-radius: var(--radius-lg);
+  background: #f6efe8;
+}
+
+.gallery-thumbs button {
+  border-radius: var(--radius-sm);
+}
+
+.detail-info .btn {
+  min-height: 51px;
+}
+
+.reviews {
+  border-color: var(--line);
+}
+
+.review-card {
+  padding: 20px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fffdfb;
+}
+
+/* Painel administrativo. */
+.admin-body {
+  background: #f8f3ee;
+}
+
+.admin-login,
+.admin-card,
+.stat {
+  border-radius: var(--radius-md);
+  border-color: #e8dcd1;
+  box-shadow: 0 5px 22px #4b35240a;
+}
+
+.stat {
+  background: linear-gradient(145deg, #fffdfb, #fbf6f1);
+}
+
+.admin-product img {
+  border-radius: var(--radius-sm);
+}
+
+.admin-product button {
+  border-radius: var(--radius-pill);
+}
+
+.security-note {
+  border-radius: var(--radius-md);
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+@media (min-width: 1100px) {
+  .product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 32px 24px;
+  }
+}
+
+@media (max-width: 900px) {
+  .product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px 16px;
+  }
+}
+
+@media (max-width: 650px) {
+  .topbar {
+    min-height: 66px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .hero {
+    padding: 34px 20px 26px;
+    gap: 24px;
+  }
+
+  .hero-art {
+    width: min(88%, 350px);
+    min-width: 0;
+    height: 270px;
+  }
+
+  .hero-stamp {
+    width: 78px;
+    height: 78px;
+    right: -12px;
+    bottom: 12px;
+  }
+
+  .benefits {
+    gap: 14px;
+  }
+
+  .section {
+    padding-left: 17px;
+    padding-right: 17px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 23px 12px;
+  }
+
+  .product-photo {
+    border-radius: 17px;
+  }
+
+  .product-title {
+    font-size: 15px;
+  }
+
+  .quick-add {
+    min-height: 42px;
+    padding: 10px 5px;
+    font-size: 10px;
+  }
+
+  .newsletter form {
+    gap: 10px;
+  }
+
+  .newsletter input {
+    min-height: 48px;
+  }
+
+  .cart-drawer {
+    top: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: calc(100% - 16px);
+    border-radius: 24px;
+  }
+
+  .modal {
+    border-radius: 22px;
+    padding: 30px 22px;
+  }
+
+  .search-panel.show {
+    gap: 10px;
+  }
+}
+
+.quote-decoration {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #b99b83;
+  border-radius: 50%;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.quote-decoration::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid #b99b83;
+  border-radius: 50%;
+}
+

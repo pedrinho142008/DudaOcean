@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f6f0e9">
+  <meta name="description" content="Dudaocean — acessórios para expressar seu estilo.">
+  <title>Dudaocean | Acessórios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="/visual.css">
+</head>
+<body>
+
+<header class="site-header topbar-redesign">
+  <div class="topbar-inner">
+    <a class="duda-brand-fixed wordmark" href="/" aria-label="DudaOcean - página inicial">
+  <span class="wordmark-name">Duda<span class="wordmark-ocean">Ocean</span><span class="wordmark-spark">✧</span></span>
+  <span class="wordmark-wave" aria-hidden="true"></span>
+</a>
+    <div class="topbar-actions">
+      <button class="icon-btn duda-icon-button" id="accountBtn" aria-label="Minha conta"><img class="duda-ui-icon" src="/assets/conta.png" alt=""></button>
+      <button class="icon-btn bag-btn duda-icon-button" id="cartOpen" aria-label="Abrir sacola"><img class="duda-ui-icon" src="/assets/sacola.png" alt=""><span id="cartCount">0</span></button>
+    </div>
+  </div>
+</header>
+
+
+<section class="showcase-hero">
+  <div class="showcase-intro">
+    <span class="eyebrow">DUDaOCEAN · ACESSÓRIOS</span>
+    <h1>Seu estilo,<br><em>seu brilho.</em></h1>
+    <p>Detalhes escolhidos para acompanhar você em cada momento.</p>
+    <a class="btn btn-dark" href="#produtos">Explorar coleção <span>↗</span></a>
+  </div>
+  <div class="showcase-visual showcase-hero-gallery showcase-auto-track" id="heroProductsTrack" aria-label="Destaques da coleção">
+    <span class="hero-gallery-loading">DudaOcean ✧</span>
+  </div>
+</section>
+
+<section class="dynamic-showcase" aria-label="Novidades da loja">
+  <div class="showcase-heading">
+    <div>
+      <span class="eyebrow">ACABARAM DE CHEGAR</span>
+      <h2>Novidades</h2>
+      <p>Descubra peças para renovar seus detalhes favoritos.</p>
+    </div>
+    <div class="showcase-arrows">
+      <button type="button" data-scroll-track="newProductsTrack" data-direction="-1" aria-label="Produtos anteriores">←</button>
+      <button type="button" data-scroll-track="newProductsTrack" data-direction="1" aria-label="Próximos produtos">→</button>
+    </div>
+  </div>
+  <div class="showcase-track" id="newProductsTrack">
+    <p class="showcase-loading">Preparando novidades…</p>
+  </div>
+</section>
+
+<section class="dynamic-showcase featured-showcase" aria-label="Produtos em destaque">
+  <div class="showcase-heading">
+    <div>
+      <span class="eyebrow">ESCOLHAS DUDaOCEAN</span>
+      <h2>Mais vendidos</h2>
+      <p class="showcase-note">Uma seleção em destaque da nossa coleção.</p>
+    </div>
+    <div class="showcase-arrows">
+      <button type="button" data-scroll-track="featuredProductsTrack" data-direction="-1" aria-label="Produtos anteriores">←</button>
+      <button type="button" data-scroll-track="featuredProductsTrack" data-direction="1" aria-label="Próximos produtos">→</button>
+    </div>
+  </div>
+  <div class="showcase-track" id="featuredProductsTrack">
+    <p class="showcase-loading">Preparando seleção…</p>
+  </div>
+</section>
+
+<div class="benefits showcase-benefits">
+  <div>✧ <span>Seleção especial</span></div>
+  <div>♡ <span>Seu estilo em cada detalhe</span></div>
+  <div>↗ <span>Compra segura</span></div>
+</div>
+
+<section id="categorias" class="section">
+  <div class="section-heading"><div><span class="eyebrow">ENCONTRE O SEU FAVORITO</span><h2>Explore por categoria</h2></div></div>
+  <div class="category-pills" id="categoryPills">
+    <button class="pill active" data-category="Todos">Todos</button>
+    <button class="pill" data-category="Colares">Colares</button>
+    <button class="pill" data-category="Brincos">Brincos</button>
+    <button class="pill" data-category="Pulseiras">Pulseiras</button>
+    <button class="pill" data-category="Anéis">Anéis</button>
+    <button class="pill" data-category="Acessórios">Acessórios</button>
+  </div>
+</section>
+
+<section id="produtos" class="section product-section">
+  <div class="section-heading"><div><span class="eyebrow">ESCOLHAS DUDaocean</span><h2>Peças para amar</h2></div><span id="productSummary" class="muted">Carregando produtos…</span></div>
+  <div class="search-panel" id="searchPanel"><input id="searchInput" type="search" placeholder="Buscar acessórios..." aria-label="Buscar produtos"></div>
+  <div id="productGrid" class="product-grid"><div class="loading">Preparando a coleção…</div></div>
+</section>
+
+<section class="quote-band" id="sobre"><span class="quote-decoration" aria-hidden="true"></span><p>Não é só um acessório.<br><em>É o detalhe que faz ser você.</em></p><span class="quote-decoration" aria-hidden="true"></span></section>
+
+<footer class="footer"><a class="brand" href="/">duda<span>ocean</span><small>ACESSÓRIOS</small></a><p>Detalhes que contam histórias.</p><div class="footer-links"><a href="/admin.html">Administração</a><a href="#" id="whatsFooter">Fale conosco</a><a href="#sobre">Sobre a loja</a></div><small>© <span id="year"></span> Dudaocean. Todos os direitos reservados.</small></footer>
+
+<div class="overlay" id="cartOverlay"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-label="Sacola de compras">
+  <div class="drawer-head"><div><span class="eyebrow">SUA SELEÇÃO</span><h2>Sacola <span id="drawerCount">(0)</span></h2></div><button class="close-btn" id="cartClose" aria-label="Fechar sacola">×</button></div>
+  <div id="cartItems" class="cart-items"><p class="muted">Sua sacola está vazia.</p></div>
+  <div class="cart-bottom"><div class="total-line"><span>Subtotal</span><strong id="cartTotal">R$ 0,00</strong></div><p class="tiny">O frete e as condições finais são apresentados no checkout.</p><button class="btn btn-dark full" id="checkoutBtn">Finalizar compra ↗</button><button class="btn btn-light full" id="whatsOrderBtn">Continuar pelo WhatsApp</button></div>
+</aside>
+
+<div class="modal-backdrop" id="accountModal">
+  <div class="modal"><button class="close-btn modal-close" data-close="accountModal">×</button><span class="eyebrow">BEM-VINDA À DUDaocean</span><h2>Minha conta</h2><p>Entre ou crie sua conta com segurança.</p>
+    <form id="authForm"><label>E-mail<input id="authEmail" type="email" required autocomplete="email"></label><label>Senha<input id="authPassword" type="password" required minlength="8" autocomplete="current-password"></label><label class="signup-only hidden">Nome completo<input id="authName" autocomplete="name"></label>
+<label class="signup-only hidden">Telefone com DDD<input id="authPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(84) 99999-9999"></label><div class="auth-buttons"><button class="btn btn-dark" type="submit" id="loginBtn">Entrar</button><button class="btn btn-light" type="button" id="signupBtn">Criar conta</button></div><p id="authMessage" class="form-message"></p></form>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script src="/demo-products.js"></script>
+<script src="/app.js"></script>
+<script src="/home-showcase.js"></script>
+  <script src="/ui-store-fixes.js" defer></script>
+  <script src="/ui-toggle-fixes.js" defer></script>
+</body>
+</html>
