@@ -33,8 +33,14 @@
         <div class="showcase-card-info">
           <span class="showcase-card-category">${esc(product.category || "Acessórios")}</span>
           <a class="showcase-card-title" href="/produto.html?slug=${encodeURIComponent(slug)}">${esc(title)}</a>
-          <strong>${money(product.price)}</strong>
-          ${product.demo ? '<small>Preço ilustrativo</small>' : ""}
+          <strong>${money(product.price)}
+            ${Number(product.compare_at_price) > Number(product.price)
+              ? `<del class="showcase-old-price">${money(product.compare_at_price)}</del>`
+              : ""}
+          </strong>
+          ${Number(product.compare_at_price) > Number(product.price)
+            ? `<small class="showcase-discount">${Math.round((1 - Number(product.price) / Number(product.compare_at_price)) * 100)}% OFF</small>`
+            : ""}
           <a class="showcase-view" href="/produto.html?slug=${encodeURIComponent(slug)}">Ver peça <span>↗</span></a>
         </div>
       </article>`;
@@ -50,7 +56,7 @@
       }
     } catch (_) {}
 
-    return Array.isArray(window.DEMO_PRODUCTS) ? [...window.DEMO_PRODUCTS] : [];
+    return [];
   }
 
   function renderHeroTrack(list) {
@@ -194,15 +200,17 @@
       return dateB - dateA;
     });
 
-    const featured = [...products].sort((a, b) => {
-      const scoreA = Number(a.featured === true || a.is_featured === true);
-      const scoreB = Number(b.featured === true || b.is_featured === true);
-      return scoreB - scoreA;
-    });
+    const featured = products
+      .filter(p => Number(p.compare_at_price) > Number(p.price))
+      .sort((a, b) => {
+        const discountA = 1 - Number(a.price) / Number(a.compare_at_price);
+        const discountB = 1 - Number(b.price) / Number(b.compare_at_price);
+        return discountB - discountA;
+      });
 
     renderHeroTrack(newest.length ? newest : products);
     renderTrack("newProductsTrack", newest.slice(0, 10), "NOVIDADE");
-    renderTrack("featuredProductsTrack", featured.slice(0, 10), "MAIS VENDIDO");
+    renderTrack("featuredProductsTrack", featured.slice(0, 10), "EM PROMOÇÃO");
     setupAutoScroll();
   }).catch(() => {
     renderTrack("newProductsTrack", [], "NOVIDADE");

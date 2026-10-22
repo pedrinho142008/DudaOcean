@@ -151,6 +151,105 @@ app.post("/api/mercadopago/webhook", async (req, res) => {
   }
 });
 
+async function verifyAdminRequest(req, res) {
+  if (!supabaseAdmin) {
+    res.status(503).json({ error: "Supabase não configurado." });
+    return false;
+  }
+
+  const header = req.headers.authorization || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : "";
+  if (!token) {
+    res.status(401).json({ error: "Sessão ausente." });
+    return false;
+  }
+
+  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  const user = data?.user;
+  if (error || !user?.email) {
+    res.status(401).json({ error: "Sessão inválida." });
+    return false;
+  }
+
+  const { data: admins, error: adminError } = await supabaseAdmin
+    .from("admins")
+    .select("email")
+    .ilike("email", user.email.trim())
+    .limit(1);
+
+  if (adminError || !admins?.length) {
+    res.status(403).json({ error: "Acesso administrativo negado." });
+    return false;
+  }
+
+  return true;
+}
+
+app.patch("/api/admin/products/:id", async (req, res) => {
+  try {
+    if (!await verifyAdminRequest(req, res)) return;
+
+    const allowed = ["stock", "active", "price", "compare_at_price"];
+    const changes = req.body || {};
+    const keys = Object.keys(changes);
+
+    if (!keys.length || keys.some(k => !allowed.includes(k))) {
+      return res.status(400).json({ error: "Campos inválidos." });
+    }
+
+    if ("stock" in changes &&
+        (!Number.isInteger(changes.stock) || changes.stock < 0)) {
+      return res.status(400).json({ error: "Estoque inválido." });
+    }
+
+    if ("active" in changes && typeof changes.active !== "boolean") {
+      return res.status(400).json({ error: "Estado inválido." });
+    }
+
+    if ("price" in changes &&
+        (!Number.isFinite(changes.price) || changes.price <= 0)) {
+      return res.status(400).json({ error: "Preço inválido." });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("products")
+      .update(changes)
+      .eq("id", req.params.id)
+      .select("id")
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return res.status(404).json({ error: "Produto não encontrado." });
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Erro na atualização administrativa:", err.message);
+    res.status(500).json({ error: "Não foi possível atualizar o produto." });
+  }
+});
+
+app.delete("/api/admin/products/:id", async (req, res) => {
+  try {
+    if (!await verifyAdminRequest(req, res)) return;
+
+    const { data, error } = await supabaseAdmin
+      .from("products")
+      .delete()
+      .eq("id", req.params.id)
+      .select("id")
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return res.status(404).json({ error: "Produto não encontrado." });
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Erro na exclusão administrativa:", err.message);
+    res.status(500).json({ error: "Não foi possível excluir o produto." });
+  }
+});
+
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Dudaocean disponível em http://localhost:${PORT}`);
 });

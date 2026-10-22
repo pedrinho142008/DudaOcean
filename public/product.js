@@ -2,24 +2,63 @@
   const $ = id => document.getElementById(id);
   const params = new URLSearchParams(location.search);
   const slug = params.get("slug") || "";
-  const demoProducts = Array.isArray(window.DEMO_PRODUCTS) ? window.DEMO_PRODUCTS : [];
   const money = value => Number(value || 0).toLocaleString("pt-BR", {
     style: "currency", currency: "BRL"
   });
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
     "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
   })[ch]);
+
+  const formatDescription = value => {
+    const lines = String(value || "").replace(/\r/g, "").split("\n");
+    const blocks = [];
+    let paragraph = [], bullets = [];
+
+    const flushP = () => {
+      if (paragraph.length) {
+        blocks.push(`<p>${paragraph.map(esc).join(" ")}</p>`);
+        paragraph = [];
+      }
+    };
+    const flushL = () => {
+      if (bullets.length) {
+        blocks.push(`<ul>${bullets.map(x =>
+          `<li>${esc(x.replace(/^(?:[-*•]|\d+[.)])\s*/, ""))}</li>`
+        ).join("")}</ul>`);
+        bullets = [];
+      }
+    };
+
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line) { flushP(); flushL(); continue; }
+      if (/^(?:[-*•]|\d+[.)])\s+/.test(line)) {
+        flushP(); bullets.push(line); continue;
+      }
+      flushL();
+
+      if (/^(detalhes|características|caracteristicas|especificações|especificacoes|como combinar|cuidados|composição|composicao|material|medidas|dimensões|dimensoes|informações de compra|informacoes de compra|descrição|descricao)\s*:?\s*$/i.test(line)) {
+        flushP();
+        blocks.push(`<h3>${esc(line.replace(/:$/, ""))}</h3>`);
+        continue;
+      }
+
+      const pair = line.match(/^([^:]{2,35}):\s*(.+)$/);
+      if (pair) {
+        flushP();
+        blocks.push(`<p class="description-detail"><strong>${esc(pair[1])}</strong><span>${esc(pair[2])}</span></p>`);
+      } else {
+        paragraph.push(line);
+      }
+    }
+
+    flushP(); flushL();
+    return blocks.join("") || `<p>${esc(value || "Um detalhe especial para complementar seu estilo.")}</p>`;
+  };
+
   const makeSlug = value => String(value || "").normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "").toLowerCase()
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
-  function findDemo() {
-    return demoProducts.find(p =>
-      String(p.slug || "") === slug ||
-      makeSlug(p.name || p.title) === slug ||
-      String(p.id || "") === slug
-    );
-  }
 
   async function getProduct() {
     try {
@@ -30,7 +69,7 @@
         if (product && (product.id || product.name || product.title)) return product;
       }
     } catch (_) {}
-    return findDemo();
+    return null;
   }
 
   function showError() {
@@ -80,8 +119,14 @@
           ${oldPrice > price ? `<del>${money(oldPrice)}</del>` : ""}
         </div>
         ${isDemo ? '<p class="demo-disclaimer">Preço e disponibilidade ilustrativos. Este é um exemplo visual, não uma oferta real.</p>' : ""}
-        <p class="detail-description">${esc(description)}</p>
-        ${!isDemo ? `<p class="detail-stock">${stock > 0 ? "Disponível" : "Produto esgotado"}</p>` : ""}
+        <section class="detail-description-card" aria-label="Descrição do produto">
+          <div class="description-card-heading">
+            <span>FEITO PARA VOCÊ</span>
+            <h2>Sobre esta peça</h2>
+          </div>
+          <div class="detail-description">${formatDescription(description)}</div>
+        </section>
+        ${!isDemo ? `<p class="detail-stock">${stock > 0 ? `${stock} unidade(s) disponível(is)` : "Produto esgotado"}</p>` : ""}
         <div class="detail-actions">
           <button class="btn btn-dark" id="detailAdd" type="button" ${stock <= 0 && !isDemo ? "disabled" : ""}>Adicionar à sacola</button>
           <button class="btn btn-outline" id="detailWhatsApp" type="button">Comprar pelo WhatsApp</button>
@@ -95,6 +140,56 @@
       if (main) main.src = btn.dataset.image;
       thumbs.forEach(item => item.classList.toggle("active", item === btn));
     }));
+
+
+    // Navegação por gesto horizontal na foto principal.
+    const mainPhotoArea = target.querySelector(".detail-main-image");
+    if (mainPhotoArea && images.length > 1) {
+      let startX = 0, startY = 0, dragging = false;
+      const mainPhoto = () => target.querySelector("#mainPhoto");
+      const showImage = index => {
+        const photo = mainPhoto();
+        if (!photo) return;
+        const next = (index + images.length) % images.length;
+        photo.src = images[next];
+        thumbs.forEach((item, i) => item.classList.toggle("active", i === next));
+      };
+
+      mainPhotoArea.addEventListener("touchstart", event => {
+        const t = event.touches[0];
+        startX = t.clientX;
+        startY = t.clientY;
+        dragging = false;
+      }, { passive: true });
+
+      mainPhotoArea.addEventListener("touchmove", event => {
+        const t = event.touches[0];
+        if (Math.abs(t.clientX - startX) > 12 &&
+            Math.abs(t.clientX - startX) > Math.abs(t.clientY - startY)) {
+          dragging = true;
+        }
+      }, { passive: true });
+
+      mainPhotoArea.addEventListener("touchend", event => {
+        const t = event.changedTouches[0];
+        const dx = t.clientX - startX;
+        const dy = t.clientY - startY;
+        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+          const current = Math.max(0, images.indexOf(mainPhoto()?.getAttribute("src")));
+          showImage(current + (dx < 0 ? 1 : -1));
+          mainPhotoArea.dataset.swiped = "true";
+          setTimeout(() => delete mainPhotoArea.dataset.swiped, 350);
+        }
+        dragging = false;
+      }, { passive: true });
+
+      mainPhotoArea.addEventListener("click", event => {
+        if (mainPhotoArea.dataset.swiped === "true") {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }, true);
+    }
 
     $("detailAdd")?.addEventListener("click", () => {
       try {
@@ -114,7 +209,7 @@
     });
 
     $("detailWhatsApp")?.addEventListener("click", () => {
-      const number = String(window.WHATSAPP_NUMBER || "").replace(/\D/g, "");
+      const number = String(window.WHATSAPP_NUMBER || "558491810746").replace(/\D/g, "");
       if (!number) {
         alert("Configure o número oficial do WhatsApp em public/app.js.");
         return;

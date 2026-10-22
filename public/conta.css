@@ -776,3 +776,55 @@ html {
     scroll-margin-top: 14px;
   }
 }
+
+
+/* Correção de largura em celulares: preserva scroll das abas */
+html, body {
+  width: 100%;
+  max-width: 100%;
+}
+body {
+  overflow-x: clip;
+}
+.page, .dashboard, .welcome, .account-grid,
+.content-card, .auth-layout, .auth-card, .account-dashboard {
+  min-width: 0;
+  max-width: 100%;
+}
+.account-grid > *, .auth-layout > *, .content-card > * {
+  min-width: 0;
+}
+.content-card, .product-item, .product-list,
+.profile-form, .stats, .welcome {
+  overflow-wrap: anywhere;
+}
+input, button, select, textarea {
+  max-width: 100%;
+}
+@media (max-width: 760px) {
+  .page {
+    width: 100%;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .account-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .side-nav {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .content-card {
+    width: 100%;
+    min-width: 0;
+    padding: 20px 14px;
+  }
+  .product-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

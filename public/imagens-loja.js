@@ -32,29 +32,8 @@
   }
 
   function run() {
-    // Logo: somente a imagem, sem nome da marca.
-    const brand = document.querySelector(
-      '[data-logo], #logo, .site-logo, .brand, a.logo, .navbar-brand'
-    );
-
-    if (brand) {
-      brand.querySelectorAll('img').forEach(img => img.remove());
-      brand.querySelectorAll(
-        'svg, i, .icon, .material-icons, [data-lucide], [class*="icon-"]'
-      ).forEach(old => old.remove());
-
-      brand.querySelectorAll(
-        '.brand-name, .site-name, .logo-text, [data-brand-name]'
-      ).forEach(el => el.remove());
-
-      const logo = document.createElement('img');
-      logo.src = A + 'duda.png';
-      logo.alt = 'Dudaocean';
-      logo.className = 'duda-logo-image';
-      logo.draggable = false;
-      brand.prepend(logo);
-      brand.classList.add('duda-brand-fixed');
-    }
+    // Preserva a marca tipográfica DudaOcean já definida no HTML.
+    // Não substituir a marca por duda.png.
 
     // Conta e sacola: troca os ícones nos botões encontrados.
     document.querySelectorAll(

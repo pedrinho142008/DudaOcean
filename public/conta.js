@@ -25,7 +25,7 @@ function setView(authed) {
   if (authed && user) {
     const name = user.user_metadata?.full_name || user.email?.split("@")[0] || "cliente";
     $("welcomeTitle").textContent = `Olá, ${name}`;
-    $("welcomeEmail").textContent = user.email || "";
+    $("welcomeEmail").textContent = "";
     showTab("inicio");
   }
 }

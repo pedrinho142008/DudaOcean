@@ -118,11 +118,36 @@
   </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
-<script src="/demo-products.js"></script>
+
 <script src="/app.js"></script>
 
 <script src="/home-showcase.js"></script>
   <script src="/ui-store-fixes.js" defer></script>
   <script src="/ui-toggle-fixes.js" defer></script>
+
+<script id="dudaAdminDoubleClickFix">
+(() => {
+  const logo = document.querySelector(".topbar-redesign .duda-brand-fixed");
+  if (!logo) return;
+  let timer = null;
+  let clicks = 0;
+  logo.addEventListener("click", event => {
+    event.preventDefault();
+    clicks++;
+    if (clicks === 2) {
+      clearTimeout(timer);
+      timer = null;
+      clicks = 0;
+      window.location.href = "/admin.html";
+      return;
+    }
+    timer = setTimeout(() => {
+      clicks = 0;
+      window.location.href = "/";
+    }, 280);
+  });
+})();
+</script>
+
 </body>
 </html>

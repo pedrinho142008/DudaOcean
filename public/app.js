@@ -5,7 +5,7 @@
  */
 const SUPABASE_URL = "https://mwfpezbntlyjnmficqsp.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13ZnBlemJudGx5am5tZmljcXNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MjM3NjYsImV4cCI6MjEwODE5OTc2Nn0.LlouHqn9zKYBKU6uvvZFGt7teuy0Vayrnug11m9y63I";
-const WHATSAPP_NUMBER = ""; // Ex.: 5584999999999 (DDI+DDD+número, sem + ou espaços)
+const WHATSAPP_NUMBER = "558491810746"; // WhatsApp oficial
 const supabaseClient = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 window.dudaoceanSupabase = supabaseClient;
@@ -22,6 +22,7 @@ function toast(message) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
 }
 function safeImage(product) {
+  if (product.video_url) return product.video_url;
   const imgs = Array.isArray(product.images) ? product.images : [];
   return imgs[0] || "";
 }
@@ -36,30 +37,32 @@ function updateCartCount() {
 
 function productCard(p) {
   const image = safeImage(p);
-  const photo = image
-    ? `<img loading="lazy" src="${escapeHtml(image)}" alt="${escapeHtml(p.title)}" onerror="this.style.display='none';this.parentElement.classList.add('no-photo')">`
-    : `<div class="photo-placeholder">Foto em breve</div>`;
+  const photo = p.video_url
+    ? `<video class="product-cover-video" src="${escapeHtml(p.video_url)}" autoplay muted loop playsinline preload="metadata"></video>`
+    : image
+      ? `<img loading="lazy" src="${escapeHtml(image)}" alt="${escapeHtml(p.title)}" onerror="this.style.display='none';this.parentElement.classList.add('no-photo')">`
+      : `<div class="photo-placeholder">Foto em breve</div>`;
+  const stock = Math.max(0, Number(p.stock) || 0);
   const discount = p.compare_at_price && Number(p.compare_at_price) > Number(p.price)
-    ? Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100)
-    : 0;
+    ? Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100) : 0;
 
   return `<article class="product-card ${p.demo ? "demo-product" : ""}">
     <div class="product-photo-wrap">
       <a class="product-photo" href="/produto.html?slug=${encodeURIComponent(p.slug)}">${photo}</a>
       ${p.demo ? '<span class="demo-label">DEMONSTRAÇÃO</span>' : ''}
       ${discount ? `<span class="discount-label">-${discount}%</span>` : ''}
-      <button class="favorite" type="button" data-favorite="${escapeHtml(p.id)}" aria-label="Favoritar ${escapeHtml(p.title)}">${favorites.has(String(p.id))?"♥":"♡"}</button>
+      <button class="favorite" type="button" data-favorite="${escapeHtml(p.id)}" aria-label="Favoritar">${favorites.has(String(p.id)) ? "♥" : "♡"}</button>
     </div>
     <div class="product-meta">
       <span class="product-category">${escapeHtml(p.category || "Acessórios")}</span>
       <a class="product-title" href="/produto.html?slug=${encodeURIComponent(p.slug)}">${escapeHtml(p.title)}</a>
-      <div class="price">${money(p.price)} ${p.compare_at_price && Number(p.compare_at_price)>Number(p.price) ? `<span class="old-price">${money(p.compare_at_price)}</span>` : ""}</div>
+      <div class="price">${money(p.price)} ${p.compare_at_price && Number(p.compare_at_price) > Number(p.price) ? `<span class="old-price">${money(p.compare_at_price)}</span>` : ""}</div>
       ${p.demo ? '<span class="demo-price-note">Preço ilustrativo — não é oferta real</span>' : ''}
+      <span class="catalog-stock">${stock > 0 ? (stock === 1 ? "Última unidade disponível" : `${stock} unidades disponíveis`) : "Sem estoque"}</span>
     </div>
-    <button class="quick-add" type="button" data-add="${escapeHtml(p.id)}" ${Number(p.stock)<=0?"disabled":""}>${Number(p.stock)<=0?"Esgotado":"Adicionar à sacola"}</button>
+    <button class="quick-add" type="button" data-add="${escapeHtml(p.id)}" ${stock <= 0 ? "disabled" : ""}>${stock <= 0 ? "Sem estoque" : "Adicionar à sacola"}</button>
   </article>`;
 }
-
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
@@ -68,81 +71,153 @@ async function loadProducts() {
   const grid = $("productGrid");
   const summary = $("productSummary");
 
-  function demoList() {
-    let list = Array.isArray(window.DEMO_PRODUCTS) ? [...window.DEMO_PRODUCTS] : [];
-    if (selectedCategory !== "Todos")
-      list = list.filter(p => p.category === selectedCategory);
-    if (searchTerm)
-      list = list.filter(p => (p.title + " " + p.category).toLowerCase().includes(searchTerm.toLowerCase()));
-    return list;
-  }
-
   try {
-    const url = new URL("/api/products", location.origin);
-    if (selectedCategory !== "Todos") url.searchParams.set("category", selectedCategory);
-    if (searchTerm) url.searchParams.set("q", searchTerm);
-
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("API indisponível");
+    // Buscar o catálogo completo para não apagar itens ao mudar de categoria.
+    const response = await fetch("/api/products");
+    if (!response.ok) throw new Error("Catálogo indisponível");
     const result = await response.json();
-    products = result.products || [];
+    const catalog = Array.isArray(result.products) ? result.products : [];
+    const activeIds = new Set(catalog.map(p => String(p.id)));
 
-    // Os exemplos só aparecem quando a API não tem produtos reais.
-    if (!products.length) products = demoList();
+    cart = cart.filter(item => activeIds.has(String(item.id)));
+    cart = cart.map(item => {
+      const p = catalog.find(x => String(x.id) === String(item.id));
+      return {
+        ...item, id: p.id, title: p.title, name: p.title, slug: p.slug,
+        price: Number(p.price || 0), image: safeImage(p),
+        video: Boolean(p.video_url), stock: Math.max(0, Number(p.stock) || 0),
+        quantity: Math.max(1, Number(item.quantity || item.qty || 1))
+      };
+    });
+
+    favorites = new Set([...favorites].filter(id => activeIds.has(String(id))));
+    localStorage.setItem("dudaocean_cart", JSON.stringify(cart));
+    localStorage.setItem("dudaocean_favorites", JSON.stringify([...favorites]));
+    renderCart();
+    updateCartCount();
+
+    const term = searchTerm.toLocaleLowerCase("pt-BR");
+    products = catalog.filter(p => {
+      const categoryMatch = selectedCategory === "Todos" || p.category === selectedCategory;
+      const content = `${p.title || ""} ${p.description || ""} ${p.category || ""}`.toLocaleLowerCase("pt-BR");
+      return categoryMatch && (!term || content.includes(term));
+    });
   } catch (err) {
-    products = demoList();
+    console.error("Falha ao atualizar catálogo:", err);
+    // Não apagar os dados locais quando a rede falhar.
+    products = [];
   }
 
   grid.innerHTML = products.length
     ? products.map(productCard).join("")
     : `<div class="empty-state"><h3>Nenhuma peça encontrada</h3><p>Experimente outra categoria ou busca.</p></div>`;
-
   summary.textContent = products.length
     ? `${products.length} ${products.length === 1 ? "peça" : "peças"}`
     : "Nenhum produto";
 }
 
+
 function addToCart(id) {
-  const p = products.find(x=>String(x.id)===String(id));
+  const p = products.find(x => String(x.id) === String(id));
   if (!p) return toast("Produto não encontrado. Atualize a página.");
-  if (Number(p.stock) <= 0) return toast("Este produto está esgotado.");
-  const item = cart.find(x=>String(x.id)===String(id));
+  const stock = Math.max(0, Number(p.stock) || 0);
+  if (stock <= 0) return toast("Este produto está sem estoque.");
+
+  const item = cart.find(x => String(x.id) === String(id));
   if (item) {
-    if (item.quantity >= Number(p.stock)) return toast("Você já adicionou todo o estoque disponível.");
-    item.quantity++;
-  } else cart.push({id:p.id,slug:p.slug,title:p.title,price:Number(p.price),image:safeImage(p),quantity:1});
-  persistCart(); toast("Adicionado à sua sacola ✧");
+    if (Number(item.quantity || 1) >= stock) return toast(`Estoque disponível: ${stock} unidade(s).`);
+    item.quantity = Number(item.quantity || 1) + 1;
+    item.stock = stock;
+  } else {
+    cart.push({
+      id: p.id, slug: p.slug, title: p.title, name: p.title,
+      price: Number(p.price), image: safeImage(p),
+      video: Boolean(p.video_url), stock, quantity: 1
+    });
+  }
+  persistCart();
+  toast("Adicionado à sua sacola ✧");
 }
+
+
 function renderCart() {
   const box = $("cartItems");
-  if (!cart.length) { box.innerHTML='<p class="muted">Sua sacola está vazia. Encontre uma peça para começar.</p>'; }
-  else box.innerHTML = cart.map(item=>`<div class="cart-row">
-    ${item.image?`<img class="cart-thumb" src="${escapeHtml(item.image)}" alt="">`:'<div class="cart-thumb"></div>'}
-    <div><a href="/produto.html?slug=${encodeURIComponent(item.slug||"")}" class="product-title">${escapeHtml(item.title)}</a><small>${money(item.price)}</small><div class="qty-controls"><button data-qty="${escapeHtml(item.id)}" data-delta="-1">−</button><span>${item.quantity}</span><button data-qty="${escapeHtml(item.id)}" data-delta="1">+</button></div></div>
-    <button class="close-btn" data-remove="${escapeHtml(item.id)}" aria-label="Remover">×</button>
-  </div>`).join("");
-  $("cartTotal").textContent = money(cart.reduce((n,i)=>n+i.price*i.quantity,0));
+  if (!cart.length) {
+    box.innerHTML = '<p class="muted">Sua sacola está vazia. Encontre uma peça para começar.</p>';
+  } else {
+    box.innerHTML = cart.map(item => {
+      const stock = Math.max(0, Number(item.stock) || 0);
+      const out = stock <= 0;
+      const tooMany = !out && Number(item.quantity) > stock;
+      const image = item.image
+        ? (item.video
+          ? `<video class="cart-thumb" src="${escapeHtml(item.image)}" muted autoplay loop playsinline></video>`
+          : `<img class="cart-thumb" src="${escapeHtml(item.image)}" alt="">`)
+        : '<div class="cart-thumb"></div>';
+      return `<div class="cart-row ${out ? "cart-row-out" : ""}">
+        ${image}
+        <div class="cart-row-info">
+          <a href="/produto.html?slug=${encodeURIComponent(item.slug || "")}" class="product-title">${escapeHtml(item.title || item.name || "Produto")}</a>
+          <small>${money(item.price)}</small>
+          ${out ? '<span class="cart-stock-warning">Sem estoque</span>' : tooMany ? `<span class="cart-stock-warning">Disponível: ${stock} unidade(s)</span>` : `<span class="cart-stock-ok">${stock} em estoque</span>`}
+          <div class="qty-controls">
+            <button data-qty="${escapeHtml(item.id)}" data-delta="-1">−</button>
+            <span>${item.quantity}</span>
+            <button data-qty="${escapeHtml(item.id)}" data-delta="1" ${out || Number(item.quantity) >= stock ? "disabled" : ""}>+</button>
+          </div>
+        </div>
+        <button class="close-btn" data-remove="${escapeHtml(item.id)}" aria-label="Remover">×</button>
+      </div>`;
+    }).join("");
+  }
+  $("cartTotal").textContent = money(cart.reduce((n, i) =>
+    n + (Number(i.stock) > 0 ? Number(i.price || 0) * Number(i.quantity || 1) : 0), 0));
 }
+
+
 function openCart(){ $("cartOverlay").classList.add("open"); $("cartDrawer").classList.add("open"); }
 function closeCart(){ $("cartOverlay").classList.remove("open"); $("cartDrawer").classList.remove("open"); }
+function hasUnavailableCartItems() {
+  return cart.some(item =>
+    Number(item.stock) <= 0 ||
+    Number(item.quantity || 1) > Number(item.stock)
+  );
+}
 function orderMessage() {
-  return "Olá! Quero fazer um pedido na Dudaocean:\n\n" + cart.map(i=>`• ${i.title} — ${i.quantity}x — ${money(i.price*i.quantity)}`).join("\n") + `\n\nSubtotal: ${money(cart.reduce((n,i)=>n+i.price*i.quantity,0))}\nGostaria de confirmar disponibilidade, frete e pagamento.`;
+  const total = cart.reduce((s, i) =>
+    s + Number(i.price || 0) * Number(i.quantity || i.qty || 1), 0);
+
+  const lines = cart.map(i => {
+    const q = Number(i.quantity || i.qty || 1);
+    const price = Number(i.price || 0);
+    return `• ${i.title || i.name || "Produto"}
+  Quantidade: ${q}
+  Valor unitário: ${money(price)}
+  Subtotal: ${money(price * q)}`;
+  });
+
+  return `Olá! 💕 Gostaria de fazer um pedido na DudaOcean.
+
+MEU PEDIDO
+
+${lines.join("\n\n")}
+
+TOTAL DOS PRODUTOS: ${money(total)}
+
+Poderia confirmar a disponibilidade, o frete e as formas de pagamento, por favor?`;
 }
 function whatsappOrder() {
   if (!cart.length) return toast("Sua sacola está vazia.");
+  if (hasUnavailableCartItems()) return toast("Remova itens sem estoque ou ajuste as quantidades.");
   if (!WHATSAPP_NUMBER) return toast("Configure o número oficial do WhatsApp em public/app.js.");
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(orderMessage())}`,"_blank","noopener");
 }
-async function checkout() {
+function checkout() {
   if (!cart.length) return toast("Sua sacola está vazia.");
-  const btn = $("checkoutBtn"); btn.disabled = true; btn.textContent = "Preparando pagamento…";
-  try {
-    const response = await fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({items:cart.map(i=>({id:i.id,quantity:i.quantity}))})});
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Não foi possível iniciar o pagamento.");
-    location.href = result.checkout_url;
-  } catch (e) { toast(e.message); }
-  finally { btn.disabled=false; btn.textContent="Finalizar compra ↗"; }
+  if (hasUnavailableCartItems()) return toast("Remova itens sem estoque ou ajuste as quantidades.");
+  if (!WHATSAPP_NUMBER) return toast("WhatsApp não configurado.");
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(orderMessage())}`;
+  window.location.href = url;
 }
 $("productGrid").addEventListener("click", e=>{
   const add=e.target.closest("[data-add]"); if(add) addToCart(add.dataset.add);
@@ -152,11 +227,33 @@ $("productGrid").addEventListener("click", e=>{
     localStorage.setItem("dudaocean_favorites",JSON.stringify([...favorites])); fav.textContent=favorites.has(String(id))?"♥":"♡";
   }
 });
-$("cartItems").addEventListener("click",e=>{
-  const remove=e.target.closest("[data-remove]");
-  if(remove){cart=cart.filter(i=>String(i.id)!==remove.dataset.remove);persistCart();return;}
-  const qty=e.target.closest("[data-qty]");
-  if(qty){const item=cart.find(i=>String(i.id)===qty.dataset.qty);if(item){item.quantity+=Number(qty.dataset.delta);if(item.quantity<=0)cart=cart.filter(i=>i!==item);persistCart();}}
+$("cartItems").addEventListener("click", e => {
+  const remove = e.target.closest("[data-remove]");
+  if (remove) {
+    cart = cart.filter(i => String(i.id) !== remove.dataset.remove);
+    persistCart();
+    return;
+  }
+
+  const qty = e.target.closest("[data-qty]");
+  if (!qty) return;
+
+  const item = cart.find(i => String(i.id) === qty.dataset.qty);
+  if (!item) return;
+
+  const delta = Number(qty.dataset.delta);
+  const next = Number(item.quantity || 1) + delta;
+  const stock = Math.max(0, Number(item.stock) || 0);
+
+  if (delta > 0 && (stock <= 0 || next > stock)) {
+    toast(stock <= 0 ? "Produto sem estoque." : `Só há ${stock} unidade(s) disponíveis.`);
+    return;
+  }
+
+  if (next <= 0) cart = cart.filter(i => i !== item);
+  else item.quantity = next;
+
+  persistCart();
 });
 $("categoryPills").addEventListener("click",e=>{
   const b=e.target.closest("[data-category]");if(!b)return;
