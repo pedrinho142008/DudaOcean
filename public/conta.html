@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f2ec">
+  <title>Minha conta | DudaOcean</title>
+  <link rel="stylesheet" href="/conta.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/conta.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Voltar à loja">duda<span>ocean</span></a>
+    <a class="back-link" href="/">← Voltar à loja</a>
+  </header>
+
+  <main class="page">
+    <section id="authView" class="auth-layout">
+      <div class="auth-intro">
+        <span class="eyebrow">SEU ESPAÇO DUDaOCEAN</span>
+        <h1>Seus detalhes.<br><em>Do seu jeito.</em></h1>
+        <p>Acesse sua conta para cuidar dos seus dados, favoritos e compras.</p>
+      </div>
+
+      <div class="auth-card">
+        <span class="eyebrow" id="authEyebrow">BEM-VINDA DE VOLTA</span>
+        <h2 id="authTitle">Entre na sua conta</h2>
+        <p class="muted" id="authDescription">Acesse seu espaço pessoal.</p>
+
+        <form id="authForm">
+          <label id="nameWrap" class="hidden">Nome completo
+            <input id="fullName" autocomplete="name">
+          </label>
+          <label id="phoneWrap" class="hidden">Telefone com DDD
+            <input id="phone" type="tel" autocomplete="tel" placeholder="(84) 99999-9999">
+          </label>
+          <label>E-mail
+            <input id="email" type="email" required autocomplete="email" placeholder="voce@email.com">
+          </label>
+          <label>Senha
+            <input id="password" type="password" required minlength="8" autocomplete="current-password" placeholder="Sua senha">
+          </label>
+          <button class="primary" id="submitAuth" type="submit">Entrar</button>
+          <p id="authMessage" class="message" role="status"></p>
+        </form>
+        <button class="text-button" id="toggleMode" type="button">Ainda não tem conta? Criar conta</button>
+        <button class="text-button" id="forgotPassword" type="button">Esqueci minha senha</button>
+      </div>
+    </section>
+
+    <section id="dashboard" class="dashboard hidden">
+      <div class="welcome">
+        <div>
+          <span class="eyebrow">SEU ESPAÇO EXCLUSIVO</span>
+          <h1 id="welcomeTitle">Minha conta</h1>
+          <p id="welcomeEmail" class="muted"></p>
+        </div>
+        <button class="outline" id="signOut" type="button">Sair da conta</button>
+      </div>
+
+      <div class="account-grid">
+        <nav class="side-nav" aria-label="Menu da conta">
+          <button class="nav-item active" data-tab="inicio">Visão geral</button>
+          <button class="nav-item" data-tab="dados">Meus dados</button>
+          <button class="nav-item" data-tab="favoritos">♡ Favoritos</button>
+          <button class="nav-item" data-tab="enderecos">Endereços</button>
+          <button class="nav-item" data-tab="pedidos">Meus pedidos</button>
+          
+          <button class="nav-item" data-tab="seguranca">Segurança</button>
+          <a class="nav-item store-link" href="/">← Continuar comprando</a>
+        </nav>
+        <section id="tabContent" class="content-card" aria-live="polite"></section>
+      </div>
+    </section>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+</body>
+</html>

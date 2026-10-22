@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="/visual.css">
+  <link rel="stylesheet" href="/account-area.css">
 </head>
 <body>
 
@@ -113,12 +114,13 @@
 <div class="modal-backdrop" id="accountModal">
   <div class="modal"><button class="close-btn modal-close" data-close="accountModal">×</button><span class="eyebrow">BEM-VINDA À DUDaocean</span><h2>Minha conta</h2><p>Entre ou crie sua conta com segurança.</p>
     <form id="authForm"><label>E-mail<input id="authEmail" type="email" required autocomplete="email"></label><label>Senha<input id="authPassword" type="password" required minlength="8" autocomplete="current-password"></label><label class="signup-only hidden">Nome completo<input id="authName" autocomplete="name"></label>
-<label class="signup-only hidden">Telefone com DDD<input id="authPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(84) 99999-9999"></label><div class="auth-buttons"><button class="btn btn-dark" type="submit" id="loginBtn">Entrar</button><button class="btn btn-light" type="button" id="signupBtn">Criar conta</button></div><p id="authMessage" class="form-message"></p></form>
+<label class="signup-only hidden">Telefone com DDD<input id="authPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(84) 99999-9999"></label><div class="auth-buttons"><button class="btn btn-dark" type="submit" id="loginBtn">Entrar</button><button class="btn btn-light" type="button" id="signupBtn">Criar conta</button><button class="btn btn-dark hidden" type="submit" id="createAccountBtn">Criar minha conta</button></div><p id="authMessage" class="form-message"></p></form>
   </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
 <script src="/demo-products.js"></script>
 <script src="/app.js"></script>
+
 <script src="/home-showcase.js"></script>
   <script src="/ui-store-fixes.js" defer></script>
   <script src="/ui-toggle-fixes.js" defer></script>

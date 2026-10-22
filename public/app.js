@@ -8,6 +8,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const WHATSAPP_NUMBER = ""; // Ex.: 5584999999999 (DDI+DDD+número, sem + ou espaços)
 const supabaseClient = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+window.dudaoceanSupabase = supabaseClient;
 
 const money = n => Number(n || 0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const $ = id => document.getElementById(id);
@@ -168,18 +169,26 @@ $("searchInput").addEventListener("keydown",e=>{if(e.key==="Enter"){searchTerm=e
 $("cartOpen").addEventListener("click",openCart);$("cartClose").addEventListener("click",closeCart);$("cartOverlay").addEventListener("click",closeCart);
 $("checkoutBtn").addEventListener("click",checkout);$("whatsOrderBtn").addEventListener("click",whatsappOrder);
 $("whatsFooter").addEventListener("click",e=>{e.preventDefault();if(!WHATSAPP_NUMBER)return toast("Configure o número oficial do WhatsApp em public/app.js.");window.open(`https://wa.me/${WHATSAPP_NUMBER}`,"_blank","noopener");});
-$("accountBtn").addEventListener("click",()=>{$("accountModal").classList.add("open");});
+$("accountBtn").addEventListener("click",()=>{window.location.href="/conta.html";});
 document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>$(b.dataset.close).classList.remove("open")));
 $("accountModal").addEventListener("click",e=>{if(e.target===$("accountModal"))$("accountModal").classList.remove("open");});
+let authMode = "login";
+
 $("signupBtn").addEventListener("click",()=>{
-  document.querySelectorAll(".signup-only").forEach(x=>x.classList.toggle("hidden"));
-  const signupMode = !$("authName").required;
+  authMode = authMode === "login" ? "signup" : "login";
+  const signupMode = authMode === "signup";
+
+  document.querySelectorAll(".signup-only").forEach(el => {
+    el.classList.toggle("hidden", !signupMode);
+  });
+
   $("authName").required = signupMode;
   $("authPhone").required = signupMode;
-  $("authPhone").autocomplete = signupMode ? "tel" : "off";
-  $("loginBtn").classList.toggle("hidden");
+  $("loginBtn").classList.toggle("hidden", signupMode);
+  $("createAccountBtn").classList.toggle("hidden", !signupMode);
   $("signupBtn").textContent = signupMode ? "Voltar para entrar" : "Criar conta";
   $("authPassword").autocomplete = signupMode ? "new-password" : "current-password";
+  $("authMessage").textContent = "";
 });
 $("authForm").addEventListener("submit",async e=>{
   e.preventDefault();
@@ -191,7 +200,7 @@ $("authForm").addEventListener("submit",async e=>{
 
   const email=$("authEmail").value.trim();
   const password=$("authPassword").value;
-  const signupMode=$("authName").required;
+  const signupMode = authMode === "signup";
   const fullName=$("authName").value.trim();
   const phone=$("authPhone").value.trim();
 
@@ -221,9 +230,10 @@ $("authForm").addEventListener("submit",async e=>{
     if(result.error) throw result.error;
 
     if(signupMode && result.data.session){
-      msg.textContent="Conta criada! Você já está conectado.";
+      msg.textContent="Cadastro realizado com sucesso! Bem-vinda à DudaOcean.";
+      toast("Seja muito bem-vinda à DudaOcean! ✧ Que bom ter você aqui.");
     }else if(signupMode){
-      msg.textContent="Cadastro enviado. Confira seu e-mail para confirmar a conta, se solicitado.";
+      msg.textContent="Cadastro criado, mas ainda não há sessão ativa. Confira a configuração de confirmação de e-mail no Supabase.";
     }else{
       msg.textContent="Login realizado com sucesso.";
     }
