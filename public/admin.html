@@ -1,11 +1,138 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Painel administrativo | Dudaocean</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/admin.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <link rel="stylesheet" href="/visual.css">
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f8f4ef">
+<title>Painel administrativo | DudaOcean</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/admin.css">
+<link rel="stylesheet" href="/visual.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="admin-body"><header class="topbar"><a class="brand" href="/">duda<span>ocean</span><small>PAINEL ADMINISTRATIVO</small></a><a class="btn btn-light" href="/">Ver loja ↗</a></header>
-<main class="admin-wrap"><section id="adminLogin" class="admin-login"><span class="eyebrow">ÁREA RESTRITA</span><h1>Bem-vinda de volta.</h1><p>Entre com uma conta autorizada para administrar a loja.</p><form id="adminLoginForm"><label>E-mail<input id="adminEmail" type="email" required></label><label>Senha<input id="adminPassword" type="password" required></label><button class="btn btn-dark full">Entrar no painel</button><p id="adminLoginMsg" class="form-message"></p></form></section>
-<section id="adminApp" class="hidden"><div class="admin-heading"><div><span class="eyebrow">VISÃO GERAL</span><h1>Seu negócio, em um só lugar.</h1></div><button class="btn btn-light" id="adminLogout">Sair</button></div>
-<div class="stat-grid"><article class="stat"><span>Produtos ativos</span><strong id="statProducts">—</strong></article><article class="stat"><span>Unidades em estoque</span><strong id="statStock">—</strong></article><article class="stat"><span>Pedidos registrados</span><strong id="statOrders">—</strong></article><article class="stat"><span>Eventos de pagamento aprovados</span><strong id="statPayments">—</strong></article></div>
-<div class="admin-columns"><section class="admin-card"><div class="card-heading"><div><span class="eyebrow">CATÁLOGO</span><h2>Cadastrar produto</h2></div></div><form id="productForm"><label>Nome do produto<input id="pTitle" required maxlength="120"></label><label>Slug (URL)<input id="pSlug" required pattern="[a-z0-9-]+" placeholder="colar-dourado"></label><label>Categoria<select id="pCategory"><option>Colares</option><option>Brincos</option><option>Pulseiras</option><option>Anéis</option><option>Acessórios</option></select></label><div class="form-row"><label>Preço (R$)<input id="pPrice" type="number" min="0.01" step=".01" required></label><label>Preço anterior (opcional)<input id="pCompare" type="number" min="0" step=".01"></label></div><label>Estoque<input id="pStock" type="number" min="0" step="1" required value="1"></label><label>URLs das fotos (uma por linha)<textarea id="pImages" rows="4" placeholder="https://..."></textarea></label><label>URL do vídeo (opcional)<input id="pVideo" type="url"></label><label>Descrição<textarea id="pDescription" rows="5" required></textarea></label><label class="check-label"><input id="pActive" type="checkbox" checked> Publicar na loja</label><button class="btn btn-dark full">Salvar produto</button><p id="productMsg" class="form-message"></p></form></section>
-<section class="admin-card"><div class="card-heading"><div><span class="eyebrow">INVENTÁRIO</span><h2>Produtos cadastrados</h2></div><button class="btn btn-light" id="refreshAdmin">Atualizar</button></div><div id="adminProducts" class="admin-product-list">Carregando…</div><div class="card-heading orders-heading"><div><span class="eyebrow">PEDIDOS</span><h2>Pedidos recentes</h2></div></div><p class="tiny">Os pedidos precisam ser registrados por um fluxo de checkout completo antes de exibir acompanhamento aqui. Este pacote não cria pedidos automaticamente apenas com o retorno visual do navegador.</p><div id="adminOrders">Para habilitar, siga as instruções de configuração no README.</div></section></div>
-<div class="security-note"><strong>Importante:</strong> não compartilhe sua chave service_role. Ela fica exclusivamente no servidor. O acesso administrativo precisa ser restrito por uma lista de e-mails autorizados e políticas RLS no Supabase.</div></section></main><div class="toast" id="toast"></div><script src="/admin.js"></script>  <script src="/imagens-loja.js" defer></script>
+<body class="admin-body">
+<header class="topbar admin-topbar">
+  <a class="duda-brand-fixed wordmark admin-brand" href="/" aria-label="DudaOcean - página inicial">
+    <span class="wordmark-name">Duda<span class="wordmark-ocean">Ocean</span><span class="wordmark-spark">✧</span></span>
+    <span class="wordmark-wave" aria-hidden="true"></span>
+    <small>PAINEL ADMINISTRATIVO</small>
+  </a>
+  <div class="admin-top-actions">
+    <a class="btn btn-light" href="/">Ver loja ↗</a>
+    <button class="btn btn-light hidden" id="adminLogout" type="button">Sair</button>
+  </div>
+</header>
+
+<main class="admin-wrap">
+<section id="adminLogin" class="admin-login">
+  <span class="eyebrow">ÁREA RESTRITA</span>
+  <h1>Bem-vinda de volta.</h1>
+  <p>Entre para administrar os produtos da DudaOcean.</p>
+  <form id="adminLoginForm">
+    <label>Usuário<input id="adminUsername" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+    <label>Senha<input id="adminPassword" type="password" autocomplete="current-password" required></label>
+    <button class="btn btn-dark full" type="submit">Entrar no painel</button>
+    <p id="adminLoginMsg" class="form-message" role="status"></p>
+  </form>
+</section>
+
+<section id="adminApp" class="hidden">
+  <div class="admin-heading">
+    <div><span class="eyebrow">ESPAÇO DA LOJA</span><h1>Vamos cuidar da sua loja.</h1><p class="admin-subtitle">Tudo organizado para facilitar seu dia.</p></div>
+  </div>
+
+  <nav class="admin-nav" aria-label="Seções administrativas">
+    <button type="button" class="admin-nav-btn active" data-page="overview"><span>⌂</span> Início</button>
+    <button type="button" class="admin-nav-btn" data-page="add"><span>＋</span> Adicionar produto</button>
+    <button type="button" class="admin-nav-btn" data-page="products"><span>▤</span> Produtos da loja</button>
+    <button type="button" class="admin-nav-btn" data-page="promotions"><span>%</span> Promoções</button>
+    <button type="button" class="admin-nav-btn" data-page="stock"><span>▦</span> Estoque</button>
+  </nav>
+
+  <section class="admin-page" data-section="overview">
+    <div class="admin-page-title"><div><span class="eyebrow">RESUMO</span><h2>Visão geral</h2></div><button class="btn btn-light" id="refreshAdmin" type="button">Atualizar</button></div>
+    <div class="stat-grid">
+      <article class="stat"><span>Produtos publicados</span><strong id="statProducts">—</strong></article>
+      <article class="stat"><span>Unidades em estoque</span><strong id="statStock">—</strong></article>
+      <article class="stat"><span>Produtos em promoção</span><strong id="statPromos">—</strong></article>
+      <article class="stat"><span>Produtos esgotados</span><strong id="statEmpty">—</strong></article>
+    </div>
+    <div class="admin-card"><div class="card-heading"><div><span class="eyebrow">ATALHOS</span><h2>O que deseja fazer?</h2></div></div>
+      <div class="admin-shortcuts">
+        <button type="button" data-goto="add"><span>＋</span><strong>Adicionar produto</strong><small>Cadastre uma nova peça</small></button>
+        <button type="button" data-goto="products"><span>▤</span><strong>Ver produtos</strong><small>Organize sua vitrine</small></button>
+        <button type="button" data-goto="promotions"><span>%</span><strong>Criar promoção</strong><small>Ofereça um desconto</small></button>
+        <button type="button" data-goto="stock"><span>▦</span><strong>Conferir estoque</strong><small>Veja o que está acabando</small></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="admin-page hidden" data-section="add">
+    <div class="admin-page-title"><div><span class="eyebrow">CATÁLOGO</span><h2 id="productFormHeading">Adicionar produto</h2><p>Preencha os dados abaixo. Os campos com * são obrigatórios.</p></div></div>
+    <div class="admin-card">
+      <form id="productForm">
+        <input id="pId" type="hidden">
+        <label>Nome do produto *<input id="pTitle" required maxlength="120" placeholder="Ex.: Colar dourado"></label>
+        <label>Categoria *
+          <select id="pCategory" required>
+            <option value="Colares">Colares</option><option value="Brincos">Brincos</option><option value="Pulseiras">Pulseiras</option><option value="Anéis">Anéis</option><option value="Acessórios">Acessórios</option>
+          </select>
+        </label>
+        <div class="form-row">
+          <label>Preço de venda (R$) *<input id="pPrice" type="number" min="0.01" step=".01" required placeholder="0,00"></label>
+          <label>Quantidade em estoque *<input id="pStock" type="number" min="0" step="1" required value="1"></label>
+        </div>
+        <label>Fotos do produto
+          <input id="pMedia" type="file" multiple accept="image/*">
+          <small class="field-help">Escolha fotos ou vídeos da galeria do celular. Você pode selecionar mais de um arquivo.</small>
+        </label>
+        <div id="mediaPreview" class="media-preview"></div>
+        <div id="existingMedia" class="existing-media"></div>
+        <label>Descrição do produto *<textarea id="pDescription" rows="4" required maxlength="3000" placeholder="Conte um pouco sobre a peça, material, tamanho e cuidados."></textarea></label>
+        <label class="check-label"><input id="pActive" type="checkbox" checked> Mostrar este produto na loja</label>
+        <div class="form-actions"><button class="btn btn-dark" id="saveProductBtn" type="submit">Salvar produto</button><button class="btn btn-light hidden" id="cancelEditBtn" type="button">Cancelar edição</button></div>
+        <p id="productMsg" class="form-message" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <section class="admin-page hidden" data-section="products">
+    <div class="admin-page-title"><div><span class="eyebrow">SUA VITRINE</span><h2>Produtos da loja</h2><p>Edite, publique ou retire produtos da vitrine.</p></div><button class="btn btn-light" data-goto="add" type="button">＋ Adicionar</button></div>
+    <label class="admin-search">Buscar produto<input id="productSearch" type="search" placeholder="Digite o nome do produto..."></label>
+    <div id="adminProducts" class="admin-product-list">Carregando produtos...</div>
+  </section>
+
+  <section class="admin-page hidden" data-section="promotions">
+    <div class="admin-page-title"><div><span class="eyebrow">OFERTAS</span><h2>Promoções</h2><p>Escolha um produto e defina o preço especial.</p></div></div>
+    <div class="admin-card">
+      <form id="promotionForm">
+        <label>Qual produto terá desconto? *
+          <select id="promoProduct" required><option value="">Carregando produtos...</option></select>
+        </label>
+        <div class="form-row">
+          <label>Preço atual (R$)<input id="promoCurrent" readonly></label>
+          <label>Novo preço promocional (R$) *<input id="promoPrice" type="number" min="0.01" step=".01" required placeholder="0,00"></label>
+        </div>
+        <p id="promoPreview" class="promo-preview">Escolha um produto para calcular o desconto.</p>
+        <div class="form-actions"><button class="btn btn-dark" type="submit">Aplicar promoção</button></div>
+        <p id="promoMsg" class="form-message" role="status"></p>
+      </form>
+    </div>
+    <div class="admin-card promo-list-card"><div class="card-heading"><div><span class="eyebrow">ATIVAS</span><h2>Produtos em promoção</h2></div></div><div id="adminPromotions">Carregando...</div></div>
+  </section>
+
+  <section class="admin-page hidden" data-section="stock">
+    <div class="admin-page-title"><div><span class="eyebrow">INVENTÁRIO</span><h2>Estoque</h2><p>Confira as quantidades e atualize o que está disponível.</p></div></div>
+    <div id="adminStock" class="admin-stock-list">Carregando estoque...</div>
+  </section>
+
+  <div class="security-note"><strong>Área administrativa:</strong> mantenha sua senha privada. Alterações de produtos são salvas na loja.</div>
+</section>
+</main>
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
+  <script src="/admin.js"></script>
+<script src="/imagens-loja.js" defer></script>
 </body></html>
